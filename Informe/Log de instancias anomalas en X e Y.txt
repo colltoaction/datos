@@ -1,0 +1,603 @@
+
+Plot : Master Plot
+Instance:  660486
+  Category: LARCENY/THEFT
+ DayOfWeek: Friday
+PdDistrict: TENDERLOIN
+Resolution: NONE
+         X: -120.5
+         Y: 90.0
+
+Plot : Master Plot
+Instance:  660712
+  Category: ASSAULT
+ DayOfWeek: Friday
+PdDistrict: BAYVIEW
+Resolution: ARREST, BOOKED
+         X: -120.5
+         Y: 90.0
+
+Plot : Master Plot
+Instance:  660713
+  Category: ASSAULT
+ DayOfWeek: Friday
+PdDistrict: BAYVIEW
+Resolution: ARREST, BOOKED
+         X: -120.5
+         Y: 90.0
+
+Plot : Master Plot
+Instance:  661107
+  Category: NON-CRIMINAL
+ DayOfWeek: Thursday
+PdDistrict: TENDERLOIN
+Resolution: PSYCHOPATHIC CASE
+         X: -120.5
+         Y: 90.0
+
+Plot : Master Plot
+Instance:  666431
+  Category: OTHER OFFENSES
+ DayOfWeek: Wednesday
+PdDistrict: TENDERLOIN
+Resolution: ARREST, CITED
+         X: -120.5
+         Y: 90.0
+
+Plot : Master Plot
+Instance:  667043
+  Category: TRESPASS
+ DayOfWeek: Monday
+PdDistrict: TENDERLOIN
+Resolution: ARREST, BOOKED
+         X: -120.5
+         Y: 90.0
+
+Plot : Master Plot
+Instance:  669947
+  Category: OTHER OFFENSES
+ DayOfWeek: Monday
+PdDistrict: BAYVIEW
+Resolution: ARREST, BOOKED
+         X: -120.5
+         Y: 90.0
+
+Plot : Master Plot
+Instance:  671710
+  Category: OTHER OFFENSES
+ DayOfWeek: Wednesday
+PdDistrict: CENTRAL
+Resolution: NONE
+         X: -120.5
+         Y: 90.0
+
+Plot : Master Plot
+Instance:  673079
+  Category: LARCENY/THEFT
+ DayOfWeek: Sunday
+PdDistrict: RICHMOND
+Resolution: NONE
+         X: -120.5
+         Y: 90.0
+
+Plot : Master Plot
+Instance:  673115
+  Category: WARRANTS
+ DayOfWeek: Sunday
+PdDistrict: TARAVAL
+Resolution: ARREST, BOOKED
+         X: -120.5
+         Y: 90.0
+
+Plot : Master Plot
+Instance:  673116
+  Category: OTHER OFFENSES
+ DayOfWeek: Sunday
+PdDistrict: TARAVAL
+Resolution: ARREST, BOOKED
+         X: -120.5
+         Y: 90.0
+
+Plot : Master Plot
+Instance:  673511
+  Category: LARCENY/THEFT
+ DayOfWeek: Saturday
+PdDistrict: TENDERLOIN
+Resolution: NONE
+         X: -120.5
+         Y: 90.0
+
+Plot : Master Plot
+Instance:  674044
+  Category: LARCENY/THEFT
+ DayOfWeek: Friday
+PdDistrict: SOUTHERN
+Resolution: NONE
+         X: -120.5
+         Y: 90.0
+
+Plot : Master Plot
+Instance:  675071
+  Category: VEHICLE THEFT
+ DayOfWeek: Tuesday
+PdDistrict: PARK
+Resolution: NONE
+         X: -120.5
+         Y: 90.0
+
+Plot : Master Plot
+Instance:  675074
+  Category: VEHICLE THEFT
+ DayOfWeek: Tuesday
+PdDistrict: PARK
+Resolution: NONE
+         X: -120.5
+         Y: 90.0
+
+Plot : Master Plot
+Instance:  675289
+  Category: SUSPICIOUS OCC
+ DayOfWeek: Tuesday
+PdDistrict: CENTRAL
+Resolution: NONE
+         X: -120.5
+         Y: 90.0
+
+Plot : Master Plot
+Instance:  675541
+  Category: VANDALISM
+ DayOfWeek: Monday
+PdDistrict: BAYVIEW
+Resolution: NONE
+         X: -120.5
+         Y: 90.0
+
+Plot : Master Plot
+Instance:  677037
+  Category: NON-CRIMINAL
+ DayOfWeek: Friday
+PdDistrict: TENDERLOIN
+Resolution: UNFOUNDED
+         X: -120.5
+         Y: 90.0
+
+Plot : Master Plot
+Instance:  677261
+  Category: VEHICLE THEFT
+ DayOfWeek: Thursday
+PdDistrict: RICHMOND
+Resolution: NONE
+         X: -120.5
+         Y: 90.0
+
+Plot : Master Plot
+Instance:  677269
+  Category: VEHICLE THEFT
+ DayOfWeek: Thursday
+PdDistrict: RICHMOND
+Resolution: NONE
+         X: -120.5
+         Y: 90.0
+
+Plot : Master Plot
+Instance:  677829
+  Category: LARCENY/THEFT
+ DayOfWeek: Wednesday
+PdDistrict: CENTRAL
+Resolution: NONE
+         X: -120.5
+         Y: 90.0
+
+Plot : Master Plot
+Instance:  678327
+  Category: LARCENY/THEFT
+ DayOfWeek: Tuesday
+PdDistrict: INGLESIDE
+Resolution: NONE
+         X: -120.5
+         Y: 90.0
+
+Plot : Master Plot
+Instance:  678540
+  Category: OTHER OFFENSES
+ DayOfWeek: Monday
+PdDistrict: TENDERLOIN
+Resolution: ARREST, CITED
+         X: -120.5
+         Y: 90.0
+
+Plot : Master Plot
+Instance:  678541
+  Category: NON-CRIMINAL
+ DayOfWeek: Monday
+PdDistrict: TENDERLOIN
+Resolution: ARREST, CITED
+         X: -120.5
+         Y: 90.0
+
+Plot : Master Plot
+Instance:  679644
+  Category: BURGLARY
+ DayOfWeek: Friday
+PdDistrict: BAYVIEW
+Resolution: NONE
+         X: -120.5
+         Y: 90.0
+
+Plot : Master Plot
+Instance:  682781
+  Category: ASSAULT
+ DayOfWeek: Friday
+PdDistrict: TENDERLOIN
+Resolution: NONE
+         X: -120.5
+         Y: 90.0
+
+Plot : Master Plot
+Instance:  683863
+  Category: OTHER OFFENSES
+ DayOfWeek: Tuesday
+PdDistrict: RICHMOND
+Resolution: ARREST, CITED
+         X: -120.5
+         Y: 90.0
+
+Plot : Master Plot
+Instance:  684407
+  Category: NON-CRIMINAL
+ DayOfWeek: Sunday
+PdDistrict: TENDERLOIN
+Resolution: NONE
+         X: -120.5
+         Y: 90.0
+
+Plot : Master Plot
+Instance:  685720
+  Category: WARRANTS
+ DayOfWeek: Thursday
+PdDistrict: TENDERLOIN
+Resolution: ARREST, BOOKED
+         X: -120.5
+         Y: 90.0
+
+Plot : Master Plot
+Instance:  685721
+  Category: WARRANTS
+ DayOfWeek: Thursday
+PdDistrict: TENDERLOIN
+Resolution: ARREST, BOOKED
+         X: -120.5
+         Y: 90.0
+
+Plot : Master Plot
+Instance:  686998
+  Category: OTHER OFFENSES
+ DayOfWeek: Monday
+PdDistrict: NORTHERN
+Resolution: NONE
+         X: -120.5
+         Y: 90.0
+
+Plot : Master Plot
+Instance:  687520
+  Category: VEHICLE THEFT
+ DayOfWeek: Saturday
+PdDistrict: TENDERLOIN
+Resolution: NONE
+         X: -120.5
+         Y: 90.0
+
+Plot : Master Plot
+Instance:  687528
+  Category: VEHICLE THEFT
+ DayOfWeek: Saturday
+PdDistrict: TENDERLOIN
+Resolution: NONE
+         X: -120.5
+         Y: 90.0
+
+Plot : Master Plot
+Instance:  688951
+  Category: OTHER OFFENSES
+ DayOfWeek: Tuesday
+PdDistrict: TARAVAL
+Resolution: ARREST, CITED
+         X: -120.5
+         Y: 90.0
+
+Plot : Master Plot
+Instance:  692259
+  Category: LARCENY/THEFT
+ DayOfWeek: Monday
+PdDistrict: RICHMOND
+Resolution: NONE
+         X: -120.5
+         Y: 90.0
+
+Plot : Master Plot
+Instance:  712310
+  Category: OTHER OFFENSES
+ DayOfWeek: Friday
+PdDistrict: CENTRAL
+Resolution: NONE
+         X: -120.5
+         Y: 90.0
+
+Plot : Master Plot
+Instance:  719994
+  Category: LARCENY/THEFT
+ DayOfWeek: Sunday
+PdDistrict: TARAVAL
+Resolution: NONE
+         X: -120.5
+         Y: 90.0
+
+Plot : Master Plot
+Instance:  727081
+  Category: OTHER OFFENSES
+ DayOfWeek: Tuesday
+PdDistrict: TENDERLOIN
+Resolution: ARREST, BOOKED
+         X: -120.5
+         Y: 90.0
+
+Plot : Master Plot
+Instance:  754829
+  Category: LARCENY/THEFT
+ DayOfWeek: Saturday
+PdDistrict: SOUTHERN
+Resolution: NONE
+         X: -120.5
+         Y: 90.0
+
+Plot : Master Plot
+Instance:  756060
+  Category: OTHER OFFENSES
+ DayOfWeek: Thursday
+PdDistrict: BAYVIEW
+Resolution: ARREST, CITED
+         X: -120.5
+         Y: 90.0
+
+Plot : Master Plot
+Instance:  759293
+  Category: WARRANTS
+ DayOfWeek: Wednesday
+PdDistrict: NORTHERN
+Resolution: ARREST, BOOKED
+         X: -120.5
+         Y: 90.0
+
+Plot : Master Plot
+Instance:  759398
+  Category: LARCENY/THEFT
+ DayOfWeek: Tuesday
+PdDistrict: NORTHERN
+Resolution: NONE
+         X: -120.5
+         Y: 90.0
+
+Plot : Master Plot
+Instance:  767319
+  Category: OTHER OFFENSES
+ DayOfWeek: Thursday
+PdDistrict: MISSION
+Resolution: ARREST, CITED
+         X: -120.5
+         Y: 90.0
+
+Plot : Master Plot
+Instance:  767502
+  Category: DISORDERLY CONDUCT
+ DayOfWeek: Thursday
+PdDistrict: NORTHERN
+Resolution: ARREST, BOOKED
+         X: -120.5
+         Y: 90.0
+
+Plot : Master Plot
+Instance:  767503
+  Category: OTHER OFFENSES
+ DayOfWeek: Thursday
+PdDistrict: NORTHERN
+Resolution: ARREST, BOOKED
+         X: -120.5
+         Y: 90.0
+
+Plot : Master Plot
+Instance:  772416
+  Category: SUSPICIOUS OCC
+ DayOfWeek: Friday
+PdDistrict: BAYVIEW
+Resolution: NONE
+         X: -120.5
+         Y: 90.0
+
+Plot : Master Plot
+Instance:  772432
+  Category: VEHICLE THEFT
+ DayOfWeek: Friday
+PdDistrict: SOUTHERN
+Resolution: NONE
+         X: -120.5
+         Y: 90.0
+
+Plot : Master Plot
+Instance:  773160
+  Category: WARRANTS
+ DayOfWeek: Thursday
+PdDistrict: NORTHERN
+Resolution: ARREST, BOOKED
+         X: -120.5
+         Y: 90.0
+
+Plot : Master Plot
+Instance:  783920
+  Category: OTHER OFFENSES
+ DayOfWeek: Saturday
+PdDistrict: SOUTHERN
+Resolution: ARREST, CITED
+         X: -120.5
+         Y: 90.0
+
+Plot : Master Plot
+Instance:  788575
+  Category: DISORDERLY CONDUCT
+ DayOfWeek: Wednesday
+PdDistrict: NORTHERN
+Resolution: ARREST, BOOKED
+         X: -120.5
+         Y: 90.0
+
+Plot : Master Plot
+Instance:  788576
+  Category: OTHER OFFENSES
+ DayOfWeek: Wednesday
+PdDistrict: NORTHERN
+Resolution: ARREST, BOOKED
+         X: -120.5
+         Y: 90.0
+
+Plot : Master Plot
+Instance:  789256
+  Category: ASSAULT
+ DayOfWeek: Monday
+PdDistrict: INGLESIDE
+Resolution: JUVENILE BOOKED
+         X: -120.5
+         Y: 90.0
+
+Plot : Master Plot
+Instance:  798835
+  Category: LARCENY/THEFT
+ DayOfWeek: Saturday
+PdDistrict: CENTRAL
+Resolution: NONE
+         X: -120.5
+         Y: 90.0
+
+Plot : Master Plot
+Instance:  823379
+  Category: LARCENY/THEFT
+ DayOfWeek: Sunday
+PdDistrict: BAYVIEW
+Resolution: NONE
+         X: -120.5
+         Y: 90.0
+
+Plot : Master Plot
+Instance:  833363
+  Category: WARRANTS
+ DayOfWeek: Thursday
+PdDistrict: NORTHERN
+Resolution: ARREST, BOOKED
+         X: -120.5
+         Y: 90.0
+
+Plot : Master Plot
+Instance:  833922
+  Category: LARCENY/THEFT
+ DayOfWeek: Wednesday
+PdDistrict: SOUTHERN
+Resolution: NONE
+         X: -120.5
+         Y: 90.0
+
+Plot : Master Plot
+Instance:  839586
+  Category: WARRANTS
+ DayOfWeek: Tuesday
+PdDistrict: SOUTHERN
+Resolution: ARREST, BOOKED
+         X: -120.5
+         Y: 90.0
+
+Plot : Master Plot
+Instance:  842260
+  Category: VEHICLE THEFT
+ DayOfWeek: Wednesday
+PdDistrict: RICHMOND
+Resolution: NONE
+         X: -120.5
+         Y: 90.0
+
+Plot : Master Plot
+Instance:  842262
+  Category: VEHICLE THEFT
+ DayOfWeek: Wednesday
+PdDistrict: RICHMOND
+Resolution: NONE
+         X: -120.5
+         Y: 90.0
+
+Plot : Master Plot
+Instance:  842435
+  Category: STOLEN PROPERTY
+ DayOfWeek: Tuesday
+PdDistrict: NORTHERN
+Resolution: ARREST, BOOKED
+         X: -120.5
+         Y: 90.0
+
+Plot : Master Plot
+Instance:  842436
+  Category: WARRANTS
+ DayOfWeek: Tuesday
+PdDistrict: NORTHERN
+Resolution: ARREST, BOOKED
+         X: -120.5
+         Y: 90.0
+
+Plot : Master Plot
+Instance:  842829
+  Category: LARCENY/THEFT
+ DayOfWeek: Monday
+PdDistrict: NORTHERN
+Resolution: NONE
+         X: -120.5
+         Y: 90.0
+
+Plot : Master Plot
+Instance:  844996
+  Category: OTHER OFFENSES
+ DayOfWeek: Wednesday
+PdDistrict: INGLESIDE
+Resolution: ARREST, CITED
+         X: -120.5
+         Y: 90.0
+
+Plot : Master Plot
+Instance:  845843
+  Category: OTHER OFFENSES
+ DayOfWeek: Monday
+PdDistrict: INGLESIDE
+Resolution: ARREST, CITED
+         X: -120.5
+         Y: 90.0
+
+Plot : Master Plot
+Instance:  852881
+  Category: SEX OFFENSES FORCIBLE
+ DayOfWeek: Friday
+PdDistrict: SOUTHERN
+Resolution: COMPLAINANT REFUSES TO PROSECUTE
+         X: -120.5
+         Y: 90.0
+
+Plot : Master Plot
+Instance:  857249
+  Category: ROBBERY
+ DayOfWeek: Monday
+PdDistrict: BAYVIEW
+Resolution: COMPLAINANT REFUSES TO PROSECUTE
+         X: -120.5
+         Y: 90.0
+
+Plot : Master Plot
+Instance:  871199
+  Category: LARCENY/THEFT
+ DayOfWeek: Wednesday
+PdDistrict: SOUTHERN
+Resolution: NONE
+         X: -120.5
+         Y: 90.0

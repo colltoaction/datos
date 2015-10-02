@@ -1,0 +1,88 @@
+train.cvs
+
+Cantidad de datos: 878049
+
+Atributos originales de los datos:
+Dates
+Category
+Descript
+DayOfWeek
+PdDistrict
+Resolution
+Address
+X
+Y
+
+Detección de coordenadas anomalas en 67 instancias con los atributos X e Y anómalos. Es decir 0,0076306% de las instancias.
+Más precisamente X=-120.5 e Y=90.0
+Estas instancias con coordenadas anómalas aparecen tanto en el train.cvs como en el test.csv.
+
+Esas instancias 67 instancias fueron eliminadas (deberiamos reeplantearnos no eliminarlas y reemplazar el X e Y por coordenadas logicas, como la media de X e Y global o la del distrito a la que pertenece la instancia) quedando 877982 instancias en el train-filtered.csv.
+
+Hay un log con las instancias anomalas: "Log de instancias anomalas en X e Y.txt"
+
+Para poder abrir el train.filtered.csv con el Weka fue necesario eliminar el caracter '.
+
+Por otro lado se separo el atributo Dates que venian en el formato: 2015-05-13 23:53:00 y se lo subdividio en dos atributos. Dates y Time.
+El formato actual de Date es 2015-05-13 pero hay que hacerle una conversion para que sea una unidad entera.
+PD: Hay instancias que aun tienen el Formato Date mal, osea 10 5 14. Quedo una especie de mix en el atributo date.
+El formato actual de Time es un numero real entre 0 y 1 que representa el rango de valores de las 24hs del dia.
+
+PD: No estoy seguro si el Mean del Weka es la media o el promedio.
+
+Resumen de atributos de train-filtered (con las instancias anomalas eliminadas):
+
+Atributos Reales
+			Min			Max			Media		DesvioSTD
+Time		0			1			0.573		0.273
+X			-122.514	.122.365	-122.423	0.025
+Y			37.708		37.82		37.767		0.024
+
+Atributos Categorizados
+
+DayOfWeek (7 tipos)
+	Monday		121573
+	Tuesday		124954
+	Wednesday	129200	
+	Thursday	125027
+	Friday		133723
+	Saturday	126804
+	Sunday		116701
+
+PdDistrict (10 tipos)
+	NORTHEN		105284
+	PARK		49311
+	INGLESIDE	78841
+	BAYVIEW		89422
+	RICHMOND	45202
+	CENTRAL		85455
+	TARAVAL		65592
+	TENDERLOIN	81794
+	MISSION		119907
+	SOUTHERN	157174
+	
+CATEGORY (te la debo)
+	Son 39 tipos
+
+RESOLUTION (te la debo)
+	
+
+Address (te la debo)
+
+Dates
+	Formato			Min						Max						Media			Desvio
+	Fecha			2003-01-06 00:01:00		2015-05-13 23:53:00
+	UnixTimeStamp	1041822060				1431571980				1237202575.618	114509564.533
+
+Estaría bueno plotear cada atributo en un grafico decente. Y no tener el conjunto "Captura de pantalla de 2015-08-25 15:56:10.png" que no se entiende bien.
+
+26/8/2015
+Se incorporaron las instancias anomalas con las medias globales.
+
+27/8/2015
+Se genera el archivo district-means.csv, el cual se puede usar para darle una locación a las instancias anómalas.
+El script está hecho en Spark y está en la carpeta spikes.
+Toma el archivo data/train.csv al cual primero se le deben sacar las cabeceras.
+Genera la carpeta data/district-means.csv, que es el archivo en el formato HDFS.
+Deben concatenarse los archivos part-* y agregar las cabeceras.
+También se agregó el archivo data/filter.py que toma train.csv y emite train-filtered.csv que tiene el unix timestamp, la hora del día normalizada, filtrado el caracter ' para Weka, y reemplazadas las coordenadas anómalas (todavía no son reemplazadas por la media de su distrito).
