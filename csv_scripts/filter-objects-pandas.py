@@ -6,6 +6,9 @@ import numpy as np
 import time
 import pytz
 from matplotlib.mlab import PCA
+from random import sample
+from scipy.spatial import distance
+import csv
 
 # TODO: sacar globals
 #pacific = pytz.timezone('US/Pacific')
@@ -91,28 +94,49 @@ def reemplazarComillasSimplesPorEspacios(descriptString):
 	return descriptString.replace("'", " ")
 
 def esDiaNoche(row):
-	if row['SunriseNormalized'] < row['TimeNormalized'] <= row['SunsetNormalized']:
+	if row['SunriseNormalized'] < row['Time'] <= row['SunsetNormalized']:
 		return 'Day'
 	else:
 		return 'Night'
+		
+def isDaylight(daylight):
+	if daylight == 'Day':
+		return 1
+	else:
+		return 0
 
 def coordinate(row):
 	return '('+str(row['X'])+','+str(row['Y'])+')'
+
+def coordinate3decimals(row):
+	return '('+str(round(row['X'],3))+','+str(round(row['Y'],3))+')'
+
+def setZipcode(row):
+	crime_coordinate = (row['X'],row['Y'])
+	minDist = 100000000000
+	for id in dfZipcodes.index.values:
+		zipcode_coordinate = (dfZipcodes.ix[id,'X'],dfZipcodes.ix[id,'Y'])
+		if minDist>=distance.euclidean(crime_coordinate,zipcode_coordinate):
+			zipcode = dfZipcodes.ix[id,'Zipcode']
+			minDist = distance.euclidean(crime_coordinate,zipcode_coordinate)
+			#print 'Actualizo el zipcode de', row['Coordinate'], minDist, zipcode_coordinate
+	#print row['Dates'], crime_coordinate, zipcode
+	return zipcode
 
 def dateTimeToDate(dateTime):
 	date = dateTime[0:10]
 	return date
 
 def dateTimeToYear(dateTime):
-	year = dateTime[0:4]
+	year = float(dateTime[0:4])
 	return year
 	
 def dateTimeToMonth(dateTime):
-	month = dateTime[5:7]
+	month = float(dateTime[5:7])
 	return month
 	
 def dateTimeToDay(dateTime):
-	day = dateTime[8:10]
+	day = float(dateTime[8:10])
 	return day
 
 def timeToTimeNormalized(time):
@@ -237,204 +261,11 @@ def genCantidadDeCrimenesPorDia(pathTrainFiltered, pathTestFiltered, pathCantida
 	print('Tiempo de generar el cant crimenes.csv:', str(t2-t1))
 	print('Tiempo Total:', str(t2-t0))
 
-def genTrainFiltered(pathTrain, pathTrainFiltered, pathSSSRNormalized):
-	t0 = time.clock()
-
-	print('Comienza lectura de los dataframes contenidos en '+ pathTrain, pathSSSRNormalized)
-
-	#Genero el dataframe a partir del csv train
-	dfTrain = pd.DataFrame.from_csv(pathTrain, header=0, sep=',', index_col=False)
-	dfSunsetSunrise = pd.DataFrame.from_csv(pathSSSRNormalized, header=0, sep=',', index_col=False)
-	#Otra forma de leer un csv
-	#dfSunsetSunrise = pd.read_table("csv/sssr-normalized.csv", sep=",")
-
-	t1 = time.clock()
-
-	print('Comienza la edicion del dataframe')
-	#Renombramos Dates por Date
-	dfTrain.rename(columns={'Dates':'DateTime'}, inplace=True)
-
-	#Creamos la columna Date
-	dfTrain['Date'] = dfTrain['DateTime'].apply(dateTimeToDate)
-
-	#Creamos la columna TimeNormalized
-	dfTrain['TimeNormalized'] = dfTrain['DateTime'].apply(dateTimeToTimeNormalized)
-
-	#Creamos la columna DateTimeTimestamp
-	dfTrain['DateTimeTimestamp'] = dfTrain['DateTime'].apply(dateTimeToDateTimeTimestamp)
-
-	#Agregamos la timezone de SF
-	#dfTrain['DatesTimestamp'] = dfTrain['Dates'].apply(localizeDatesYmdHMS)
-
-	#Creamos la columna TimeNormalized (debe ir antes de modificar las fechas)
-	#dfTrain['TimeNormalized'] = dfTrain['DatesTimestamp'].apply(timeNormalized)
-
-	#Creamos la columna DatesTimeStamp sin la hora
-	#dfTrain['DatesTimestamp'] = dfTrain['DatesTimestamp'].apply(dateNormalized)
-
-	#Creamos la columna DatesTimeStamp sin la hora
-	#dfTrain['Date'] = dfTrain['DatesTimestamp'].apply(dateString)
-
-
-
-	#Creamos la columna DayLight
-	dfTrain = pd.merge(dfTrain, dfSunsetSunrise, on='Date', how='left')
-	dfTrain['Daylight'] = dfTrain.apply(esDiaNoche, axis=1)
-	dfTrain.drop(['Sunset','Sunrise','SunsetNormalized','SunriseNormalized'], axis=1, inplace=True)
-
-	##Creamos la columna ClimateDisaster
-	##dfClimateDisaster['Dates'] = dfClimateDisaster['Dates'].apply(localizeDatesYdm)
-	##dfClimateDisaster['Dates'] = dfClimateDisaster['Dates'].apply(dateNormalized)
-	##dfMerged = pd.merge(dfMerged, dfClimateDisaster, on='Dates', how='left')
-
-	#Correccion de Coordenadas Anomalas
-	dfTrain = correccionDeCoordenadasAnomalas(dfTrain)
-
-	#Creamos la columna XY
-	dfTrain['Coordinate'] = dfTrain.apply(coordinate, axis=1)
-
-	#Reemplazamos los caracteres en las descripciones de los crimenes "'" y los reemplazamos por " " para no generar conflictos con el Weka
-	dfTrain['Descript'] = dfTrain['Descript'].apply(reemplazarComillasSimplesPorEspacios)
-
-	t2 = time.clock()
-
-	print('Comienza la escritura del '+pathTrainFiltered)
-	dfTrain.to_csv(pathTrainFiltered, sep=',', index=False, header=True)#, encoding='UTF-8')
-	t3 = time.clock()
-
-	print('Tiempo de lectura del train.csv:', str(t1-t0))
-	print('Tiempo de edicion del dataframe:', str(t2-t1))
-	print('Tiempo de escritura del train-filtered.csv:', str(t3-t2))
-	print('Tiempo Total:', str(t3-t0))
-
-
-def genTrainFilteredV2(pathTrain, pathTrainFilteredV2, pathSSSRNormalized):
-	t0 = time.clock()
-
-	print('Comienza lectura de los dataframes contenidos en '+ pathTrain, pathSSSRNormalized)
-
-	#Genero el dataframe a partir del csv train
-	dfTrain = pd.DataFrame.from_csv(pathTrain, header=0, sep=',', index_col=False)
-	dfSunsetSunrise = pd.DataFrame.from_csv(pathSSSRNormalized, header=0, sep=',', index_col=False)
-	#Otra forma de leer un csv
-	#dfSunsetSunrise = pd.read_table("csv/sssr-normalized.csv", sep=",")
-
-	t1 = time.clock()
-
-	print('Comienza la edicion del dataframe')
-	#Renombramos Dates por Date
-	dfTrain.rename(columns={'Dates':'DateTime'}, inplace=True)
-
-	#Creamos la columna Date
-	dfTrain['Date'] = dfTrain['DateTime'].apply(dateTimeToDate)
-
-	#Creamos la columna Year
-	dfTrain['Year'] = dfTrain['DateTime'].apply(dateTimeToYear)
-	
-	#Creamos la columna Month
-	dfTrain['Month'] = dfTrain['DateTime'].apply(dateTimeToMonth)
-	
-	#Creamos la columna Day
-	dfTrain['Day'] = dfTrain['DateTime'].apply(dateTimeToDay)
-
-	#Creamos la columna TimeNormalized
-	dfTrain['TimeNormalized'] = dfTrain['DateTime'].apply(dateTimeToTimeNormalized)
-
-	#Creamos la columna DateTimeTimestamp
-	dfTrain['DateTimeTimestamp'] = dfTrain['DateTime'].apply(dateTimeToDateTimeTimestamp)
-
-	#Creamos la columna DayLight
-	dfTrain = pd.merge(dfTrain, dfSunsetSunrise, on='Date', how='left')
-	dfTrain['Daylight'] = dfTrain.apply(esDiaNoche, axis=1)
-	dfTrain.drop(['Sunset','Sunrise','SunsetNormalized','SunriseNormalized'], axis=1, inplace=True)
-
-	##Creamos la columna ClimateDisaster
-	##dfClimateDisaster['Dates'] = dfClimateDisaster['Dates'].apply(localizeDatesYdm)
-	##dfClimateDisaster['Dates'] = dfClimateDisaster['Dates'].apply(dateNormalized)
-	##dfMerged = pd.merge(dfMerged, dfClimateDisaster, on='Dates', how='left')
-
-	#Correccion de Coordenadas Anomalas
-	dfTrain = correccionDeCoordenadasAnomalas(dfTrain)
-
-	#Creamos la columna XY
-	dfTrain['Coordinate'] = dfTrain.apply(coordinate, axis=1)
-
-	#Reemplazamos los caracteres en las descripciones de los crimenes "'" y los reemplazamos por " " para no generar conflictos con el Weka
-	dfTrain['Descript'] = dfTrain['Descript'].apply(reemplazarComillasSimplesPorEspacios)
-
-	#Dropeamos Descript, PdDistrict, Address y Resolution
-	dfTrain.drop(['Descript','PdDistrict','Address','Resolution','DateTime','Date','Category','DayOfWeek','Daylight','Coordinate'], axis=1, inplace=True)
-	#dfTrain.drop(['Descript','Address','Resolution','DateTime','Date','Category','Daylight',], axis=1, inplace=True)
-
-	t2 = time.clock()
-	print dfTrain
-	
-	print('Comienza la escritura del '+pathTrainFilteredV2)
-	dfTrain.to_csv(pathTrainFilteredV2, sep=',', index=False, header=True)#, encoding='UTF-8')
-	t3 = time.clock()
-
-	print('Tiempo de lectura del train.csv:', str(t1-t0))
-	print('Tiempo de edicion del dataframe:', str(t2-t1))
-	print('Tiempo de escritura del train-filtered.csv:', str(t3-t2))
-	print('Tiempo Total:', str(t3-t0))
-
-
-def genTestFiltered(pathTest, pathTestFiltered, pathSSSRNormalized):
-	t0 = time.clock()
-
-	print('Comienza lectura de los dataframes contenidos en '+ pathTest, pathSSSRNormalized)
-
-	#Genero el dataframe a partir del csv train
-	dfTest = pd.DataFrame.from_csv(pathTest, header=0, sep=',', index_col=False)
-	dfSunsetSunrise = pd.DataFrame.from_csv(pathSSSRNormalized, header=0, sep=',', index_col=False)
-	#Otra forma de leer un csv
-	#dfSunsetSunrise = pd.read_table("csv/sssr-normalized.csv", sep=",")
-
-	t1 = time.clock()
-
-	print('Comienza la edicion del dataframe')
-	#Renombramos Dates por Date
-	dfTest.rename(columns={'Dates':'DateTime'}, inplace=True)
-
-	#Creamos la columna Date
-	dfTest['Date'] = dfTest['DateTime'].apply(dateTimeToDate)
-
-	#Creamos la columna TimeNormalized
-	dfTest['TimeNormalized'] = dfTest['DateTime'].apply(dateTimeToTimeNormalized)
-
-	#Creamos la columna DateTimeTimestamp
-	dfTest['DateTimeTimestamp'] = dfTest['DateTime'].apply(dateTimeToDateTimeTimestamp)
-
-	#Creamos la columna DayLight
-	dfTest = pd.merge(dfTest, dfSunsetSunrise, on='Date', how='left')
-	dfTest['Daylight'] = dfTest.apply(esDiaNoche, axis=1)
-	dfTest.drop(['Sunset','Sunrise','SunsetNormalized','SunriseNormalized'], axis=1, inplace=True)
-
-	##Creamos la columna ClimateDisaster
-	##dfClimateDisaster['Dates'] = dfClimateDisaster['Dates'].apply(localizeDatesYdm)
-	##dfClimateDisaster['Dates'] = dfClimateDisaster['Dates'].apply(dateNormalized)
-	##dfMerged = pd.merge(dfMerged, dfClimateDisaster, on='Dates', how='left')
-
-	#Correccion de Coordenadas Anomalas
-	dfTest = correccionDeCoordenadasAnomalas(dfTest)
-
-	#Creamos la columna XY
-	dfTest['Coordinate'] = dfTest.apply(coordinate, axis=1)
-
-	#Reemplazamos los caracteres en las descripciones de los crimenes "'" y los reemplazamos por " " para no generar conflictos con el Weka
-	#dfTest['Descript'] = dfTest['Descript'].apply(reemplazarComillasSimplesPorEspacios)
-
-	t2 = time.clock()
-
-	print('Comienza la escritura del '+pathTestFiltered)
-	dfTest.to_csv(pathTestFiltered, sep=',', index=False, header=True)#, encoding='UTF-8')
-	t3 = time.clock()
-
-	print('Tiempo de lectura del test.csv:', str(t1-t0))
-	print('Tiempo de edicion del dataframe:', str(t2-t1))
-	print('Tiempo de escritura del test-filtered.csv:', str(t3-t2))
-
-	print('Tiempo Total:', str(t3-t0))
+def catToBin(distrito, cat):
+	if distrito == cat:
+		return 1
+	else:
+		return 0
 
 def genVDM_AtributoCategorico(pathTrainFiltered, atributoCategorico):
 	dfTrainFiltered = pd.DataFrame.from_csv(pathTrainFiltered, header=0, sep=',', index_col=False)
@@ -482,44 +313,168 @@ def genVDM_AtributoCategorico2(pathTrainFiltered, atributoCategorico):
 	print df
 	df.to_csv('csv/VDM/probCategoryTalque'+atributoCategorico+'.csv', sep=',', index=True, header=True)
 
+def normalizacionZscore(df, lsANormalizar):	
+	#NORMALIZACION
+	#lsANormalizar=df.columns.values	
+	
+	#Normalizacion (x-media) / (max-min)
+	#df[lsANormalizar] = df[lsANormalizar].apply(lambda x: (x - x.mean()) / (x.max() - x.min()))
+	
+	#Normalizacion Z-score
+	print lsANormalizar
+	df[lsANormalizar] = df[lsANormalizar].apply(lambda x: (x - x.mean()) / x.std())
+	
+	return df
+
+def sampleTrain(pathCSV,n):
+	df = pd.DataFrame.from_csv(pathCSV, header=0, sep=',', index_col=False)
+
+	rindex =  np.array(sample(xrange(len(df)), n))
+	dfr = df.ix[rindex]
+	dfr.to_csv(pathCSV[0:-4]+'-sample'+str(n)+'.csv', sep=',', index=False, header=True)#, encoding='UTF-8')
+	
+def sampleTrainDF(df,pathCSV,n):
+	rindex =  np.array(sample(xrange(len(df)), n))
+	dfr = df.ix[rindex]
+	dfr.to_csv(pathCSV[0:-4]+'-sample'+str(n)+'.csv', sep=',', index=False, header=True)#, encoding='UTF-8')
+
+def genTrainFiltered(pathTrain, pathTrainFiltered, pathSSSRNormalized, pathClima, pathClimateEvents, pathXYtoZipcode):
+	t0 = time.clock()
+
+	print('Comienza lectura de los dataframes contenidos en '+ pathTrain, pathSSSRNormalized)
+
+	#Genero el dataframe a partir del csv train
+	dfTrain = pd.DataFrame.from_csv(pathTrain, header=0, sep=',', index_col=False)
+	dfTrain = dfTrain[['Category','Dates','DayOfWeek','PdDistrict','Zipcode','Address','X','Y','Descript','Resolution']]
+	dfSunsetSunrise = pd.DataFrame.from_csv(pathSSSRNormalized, header=0, sep=',', index_col=False)
+	dfClima = pd.DataFrame.from_csv(pathClima, header=0, sep=',', index_col=False)
+	dfClimateEvents = pd.DataFrame.from_csv(pathClimateEvents, header=0, sep=',', index_col=False)
+	global dfZipcodes
+	dfZipcodes = pd.DataFrame.from_csv(pathXYtoZipcode, header=0, sep=',', index_col=False)
+	#Otra forma de leer un csv
+	#dfSunsetSunrise = pd.read_table("csv/sssr-normalized.csv", sep=",")
+
+	t1 = time.clock()
+
+	print('Comienza la edicion del dataframe')
+	#Renombramos Dates por Date
+	dfTrain.rename(columns={'Dates':'DateTime'}, inplace=True)
+
+	#Creamos la columna Date
+	dfTrain['Date'] = dfTrain['DateTime'].apply(dateTimeToDate)
+
+	#Creamos la columna Year
+	dfTrain['Year'] = dfTrain['DateTime'].apply(dateTimeToYear)
+	
+	#Creamos la columna Month
+	dfTrain['Month'] = dfTrain['DateTime'].apply(dateTimeToMonth)
+	
+	#Creamos la columna Day
+	dfTrain['Day'] = dfTrain['DateTime'].apply(dateTimeToDay)
+
+	#Creamos la columna TimeNormalized
+	dfTrain['Time'] = dfTrain['DateTime'].apply(dateTimeToTimeNormalized)
+
+	#Creamos la columna DateTimeTimestamp
+	dfTrain['DateTimeTimestamp'] = dfTrain['DateTime'].apply(dateTimeToDateTimeTimestamp)
+
+	#Creamos la columna DayLight
+	dfTrain = pd.merge(dfTrain, dfSunsetSunrise, on='Date', how='left')
+	dfTrain['Daylight'] = dfTrain.apply(esDiaNoche, axis=1)
+	dfTrain.drop(['Sunset','Sunrise','SunsetNormalized','SunriseNormalized'], axis=1, inplace=True)
+
+	#Creamos la columnas del Clima
+	dfTrain = pd.merge(dfTrain, dfClima, on='Date', how='left')
+	dfTrain.drop(['HDD','CDD','Departure'], axis=1, inplace=True)
+
+	#Creamos las columna de ClimateEvents
+	dfTrain = pd.merge(dfTrain, dfClimateEvents, on='Date', how='left')
+
+	#Correccion de Coordenadas Anomalas
+	dfTrain = correccionDeCoordenadasAnomalas(dfTrain)
+
+	#Creamos la columna Coordinate
+	dfTrain['Coordinate'] = dfTrain.apply(coordinate, axis=1)
+
+	#Agregamos los Zipcodes
+	#El zipcode se agrego a parte
+	#dfTrain['Zipcode'] = dfTrain.apply(setZipcode, axis=1)
+
+	#Reemplazamos los caracteres en las descripciones de los crimenes "'" y los reemplazamos por " " para no generar conflictos con el Weka
+	dfTrain['Descript'] = dfTrain['Descript'].apply(reemplazarComillasSimplesPorEspacios)
+
+	##BINARIZACION
+	##Binarizar Daylight
+	#dfTrain['Daylight'] = dfTrain['Daylight'].apply(isDaylight)
+
+	##Binarizar el resto de las categorias que hay que binarizar
+	##lsCatsToBin = ['Year', 'Month', 'Day', 'PdDistrict', 'DayOfWeek']
+	#lsCatsToBin = ['DayOfWeek', 'PdDistrict', 'Zipcode']
+	#for catABinarizar in lsCatsToBin:
+		#lsCatABinarizar = obtenerTodosLosValoresPosiblesDeUnaColumnaDelDataFrame(dfTrain, catABinarizar)
+		#for factor in lsCatABinarizar:
+			#dfTrain[str(catABinarizar)+' '+str(factor)] = dfTrain[catABinarizar].apply((lambda x: catToBin(factor, x)))
+
+	##Dropeamos lo que no nos interesa
+	#dfTrain.drop(['Descript','PdDistrict','Address','Resolution','DateTime','Date','DayOfWeek','Coordinate','Zipcode'], axis=1, inplace=True)
+	##dfTrain.drop(['Descript','Address','Resolution','DateTime','Date','Category','Daylight',], axis=1, inplace=True)
+
+	#print dfTrain
+	#dfTrain = dfTrain/dfTrain.loc[dfTrain.abs().idxmax()].astype(np.float64)
+	#print dfTrain
+
+	t2 = time.clock()
+	##print dfTrain
+	
+	print dfTrain.columns.values
+
+	print('Comienza la escritura del '+pathTrainFiltered)
+	#dfTrain.to_csv(pathTrainFiltered, sep=',', index=False, header=True)#, encoding='UTF-8')
+	#dfTrain.to_csv('csv/trainWithZipcode.csv', sep=',', index=False, header=True)#, encoding='UTF-8')
+	dfTrain.to_csv('csv/trainFilteredSinBinarizar.csv', sep=',', index=False, header=True)#, encoding='UTF-8')
+	t3 = time.clock()
+
+	print('Tiempo de lectura del train.csv:', str(t1-t0))
+	print('Tiempo de edicion del dataframe:', str(t2-t1))
+	print('Tiempo de escritura del train-filtered.csv:', str(t3-t2))
+	print('Tiempo Total:', str(t3-t0))
+
+def zipCodeToCat(value):
+	return 'CP'+str(value)
+
 def main():
-	pathTrain = 'csv/train.csv'
+	pathTrain = 'csv/trainWithZipcode.csv'
+	pathTrainSample = 'csv/train-sample50000.csv'
 	pathTest = 'csv/test.csv'
-	pathTrainFiltered = 'csv/train-filtered-pandas.csv'
-	pathTrainFilteredV2 = 'csv/train-filtered-pandasV2.csv'
-	pathTestFiltered = 'csv/test-filtered-pandas.csv'
+	pathTrainFiltered = 'csv/train-filtered.csv'
+	pathTrainFilteredSample = 'csv/train-filtered-sample50000.csv'
+	pathTestFiltered = 'csv/test-filtered.csv'
 	pathSSSR = 'csv/sssr.csv'
 	pathSSSRNormalized = 'csv/sssr-normalized.csv'
+	pathClima = 'csv/clima.csv'
+	pathClimateEvents = 'csv/climateEvents.csv'
 	pathCantidadCrimenesPorDia = 'csv/Cantidad de crimenes por dia.csv'
 	pathCantidadCrimenesPorCoordenada = 'csv/Cantidad de crimenes por coordenada.csv'
+	pathXYtoZipcode = 'csv/XYtoZipcode.csv'
 
 	#Genero sssr-normalized.csv
 	#genSSSR_normalized(pathSSSR, pathSSSRNormalized)
 
 	#Genero el train-filtered.csv
-	#genTrainFiltered(pathTrain, pathTrainFiltered, pathSSSRNormalized)
+	#genTrainFiltered(pathTrain, pathTrainFiltered, pathSSSRNormalized, pathClima, pathClimateEvents, pathXYtoZipcode)
 
-	#Genero el train-filteredV2.csv
-	#genTrainFilteredV2(pathTrain, pathTrainFilteredV2, pathSSSRNormalized)
-	df = pd.DataFrame.from_csv(pathTrainFilteredV2, header=0, sep=',', index_col=False)
-	#df.drop(['Year','Month','Day','TimeNormalized','DateTimeTimestamp'], axis=1, inplace=True)
-	
-	print df
-	#print 'PCA..'
-	#results = PCA(df)
-	#print 'results..'
-	#print results.fracs
-	#print 'resultsfracs..'
-	
-	#Normalizar columnas
-	#df[['X','Y','Year','Month','Day','TimeNormalized','DateTimeTimestamp']] = df[['X','Y','Year','Month','Day','TimeNormalized','DateTimeTimestamp']].apply(lambda x: (x - x.mean()) / (x.max() - x.min()))
-	
-	#print df
-	#print 'PCA..'
-	#results = PCA(df)
-	#print 'results..'
-	#print results.fracs
-	#print 'resultsfracs..'
+	##Genero un sample con los atributos que nos interesa probar
+	#df = pd.DataFrame.from_csv(pathTrainFiltered, header=0, sep=',', index_col=False)
+	##df = df[['Category','X','Y','Time']]
+	#cols = df.columns.values[1:] #Elimito la columna category para normalizar
+	#df = normalizacionZscore(df, cols)
+	#sampleTrainDF(df,'csv/train-filtered-CatAllDim.csv',10000)
+
+	#Genero un sample
+	#sampleTrain(pathTest,10000);
+	#sampleTrain(pathTest,50000);
+	#sampleTrain(pathTrain,10000);
+	#sampleTrain(pathTrain,50000);
 
 	#Genero el test-filtered.csv
 	#genTestFiltered(pathTest, pathTestFiltered, pathSSSRNormalized)
@@ -543,6 +498,13 @@ def main():
 	#genVDM_AtributoCategorico2(pathTrainFiltered, 'Descript')
 	#genVDM_AtributoCategorico2(pathTrainFiltered, 'Coordinate')
 	#genVDM_AtributoCategorico2(pathTrainFiltered, 'DayOfWeek')
+	
+	
+	#Visualizacion de los Zipcodes en weka
+	dfTrain = pd.DataFrame.from_csv('csv/trainFilteredSinBinarizar.csv', header=0, sep=',', index_col=False)
+	dfTrain = dfTrain[['PdDistrict','Zipcode','Address','X','Y']]
+	dfTrain['Zipcode'] = dfTrain['Zipcode'].apply(zipCodeToCat)
+	dfTrain.to_csv('csv/trainFilteredSinBinarizarDireccionesWeka.csv', sep=',', index=False, header=True)
 
 if __name__ == "__main__":
 	main()

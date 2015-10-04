@@ -1,0 +1,8 @@
+*.pyc
+__pycache__/
+.Rhistory
+.~lock.*
+metastore_db/
+.ipynb_checkpoints/
+csv_scripts/csv/
+csv_scripts/Ploteos/

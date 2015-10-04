@@ -3,15 +3,46 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib
+import seaborn as sns
 from datetime import datetime
 import time
 import Image
+import random
+
+from matplotlib.mlab import PCA
 
 #import prettyplotlib as ppl
 
 #Esto va con matplotlib 1.4
 matplotlib.style.use('ggplot')
 #%matplotlib inline
+
+import colorsys
+
+def get_N_HexCol(N):
+	HSV_tuples = [(x*1.0/N, 0.95, 0.95) for x in xrange(N)]
+	RGB_tuples = []
+	for rgb in HSV_tuples:
+		RGB_tuples.append(colorsys.hsv_to_rgb(*rgb))
+		#hex_out.append("".join(map(lambda x: chr(x).encode('hex'),rgb)))
+	print RGB_tuples
+	return RGB_tuples
+
+def randomColor():
+	lshex = ['0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F']
+	return '#'+random.choice(lshex)+random.choice(lshex)+random.choice(lshex)+random.choice(lshex)+random.choice(lshex)+random.choice(lshex)
+
+def normalizacionZscore(df):	
+	#NORMALIZACION
+	lsCatsANormalizar = df.columns.values	
+	
+	#Normalizacion (x-media) / (max-min)
+	#df[lsCatsANormalizar] = df[lsCatsANormalizar].apply(lambda x: (x - x.mean()) / (x.max() - x.min()))
+	
+	#Normalizacion Z-score
+	df[lsCatsANormalizar] = df[lsCatsANormalizar].apply(lambda x: (x - x.mean()) / x.std())
+	
+	return df
 
 #SUNSETSUNRISE
 def plotSunsetSunrise_01():
@@ -111,11 +142,31 @@ def plotCoordenadas_03():
 		plt.close()
 
 def plotCoordenadas_04(): #BUG, tengo que usar el sistema de colores por grupo para arreglarlo
-	"""Coordenadas de todos los crimenes por distrito"""
-	df = pd.DataFrame.from_csv("csv/train-filtered.csv", header=0, sep=',', index_col=False, encoding='UTF-8')
-	df.plot(kind='scatter', x='X', y='Y', c='PdDistrict', figsize=(10, 8), title='Coordenadas de todos los crimenes')
-	plt.axis('equal')
-	plt.savefig("Ploteos/Matplotlib/Coordenadas de todos los crimenes por distrito.png")
+	"""Coordenadas de todos los crimenes por distrito""" 
+	df = dfTrain
+	lsColor = get_N_HexCol(len(lsPdDistrict))
+	i=0
+	ax = df[df['PdDistrict']==lsPdDistrict[0]].plot(kind='scatter', x='X', y='Y', c=lsColor[i], xlim=(-122.52,-122.36), ylim=(37.705,37.825), figsize=(10, 9), s=10, label=lsPdDistrict[0], title='Coordenadas de todos los crimenes por distrito')
+	for distrito in lsPdDistrict[1:]:
+		i+=1
+		df[df['PdDistrict']==distrito].plot(kind='scatter', x='X', y='Y', label=distrito, c=lsColor[i], s=10, ax=ax)
+	
+	plt.savefig("Ploteos/Matplotlib/Coordenadas de todos los crimenes por distrito-.png")
+	plt.cla()
+	plt.clf()
+	plt.close()
+
+def plotCoordenadas_04_1(): #BUG, tengo que usar el sistema de colores por grupo para arreglarlo
+	"""Coordenadas de todos los crimenes por codigo postal""" 
+	df = dfTrain
+	lsColor = get_N_HexCol(len(lsZipcode))
+	i=0
+	ax = df[df['Zipcode']==lsZipcode[0]].plot(kind='scatter', x='X', y='Y', c=lsColor[i], xlim=(-122.52,-122.36), ylim=(37.705,37.825), figsize=(10, 9), s=10, label=lsZipcode[0], title='Coordenadas de todos los crimenes por codigo postal')
+	for zipcode in lsZipcode[1:]:
+		i+=1
+		df[df['Zipcode']==zipcode].plot(kind='scatter', x='X', y='Y', label=zipcode, c=lsColor[i], s=10, ax=ax)
+	
+	plt.savefig("Ploteos/Matplotlib/Coordenadas de todos los crimenes por codigo postal-.png")
 	plt.cla()
 	plt.clf()
 	plt.close()
@@ -814,6 +865,35 @@ def plotMediasPorDiaDeCrimenes_04():
 	plt.clf()
 	plt.close()
 
+def plotPCA_01():
+	df = dfTrain.drop(['Category'], axis=1)
+	df = normalizacionZscore(df);
+	print df
+	dfcov = df.cov()
+	dfcov.to_csv('csv/trainCov.csv', sep=',', index=False, header=True)#, encoding='UTF-8')
+	plt.figure(figsize=(20,16))
+	ax = sns.heatmap(dfcov)
+	#plt.setp(ax.get_xticklabels(), rotation=45)
+	#plt.setp(ax.get_xticklabels(), fontsize=5)
+	#plt.setp(ax.get_yticklabels(), fontsize=5)
+
+	plt.savefig("Ploteos/Matplotlib/PCA-COV2.png")
+	
+	pca = PCA(df)
+	print 'fracs:', pca.fracs
+	
+	dfTmp = pd.DataFrame(pca.fracs, columns=['Fracs'])
+	for id in dfTmp.index.values:
+		dfTmp.ix[id,'Acumulado'] = dfTmp['Fracs'][0:id].sum()
+	
+	#dfTmp['Acumulado'] = 1
+	print dfTmp
+	dfTmp.plot(kind='line', title='PCA', ylim=(0,1))
+	plt.savefig("Ploteos/Matplotlib/PCA2.png")
+	plt.cla()
+	plt.clf()
+	plt.close()
+
 def obtenerTodosLosValoresPosiblesDeUnaColumnaDelDataFrame(dataframe, columna):
 	'''Obtenemos todos los casos de PdDistrict (por ejemplo) que se encuentran en el dataframe.'''	
 	#Filtramos las filas y nos quedamos solo las que tienen elementos de la columna 'columna' distintos.
@@ -838,24 +918,27 @@ def main():
 	global lsAddress
 	global lsDescript
 	global lsPdDistrict
+	global lsZipcode
 	global lsTuplaXY
 	global lsDatesTimeStamp
 	
-	dfTrain = pd.DataFrame.from_csv("csv/train-filtered-pandas.csv", header=0, sep=',', index_col=False, encoding='UTF-8')
+	dfTrain = pd.DataFrame.from_csv("csv/trainFilteredSinBinarizar.csv", header=0, sep=',', index_col=False, encoding='UTF-8')
 	dfSunsetSunrise = pd.DataFrame.from_csv("csv/sssr-normalized.csv", header=0, sep=',', index_col=False, encoding='UTF-8')
 	dfCantCrimenesPorDia = pd.DataFrame.from_csv("csv/Cantidad de crimenes por dia.csv", header=0, sep=',', index_col=False, encoding='UTF-8')
 
+	print 'Finalizo la lectura de los csv'
 	
 	lsHora = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23]
 	lsDaylight = ['Day', 'Night']
 	lsDayOfWeek = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday']
 	lsCategory = obtenerTodosLosValoresPosiblesDeUnaColumnaDelDataFrame(dfTrain, 'Category')
-	lsResolution = obtenerTodosLosValoresPosiblesDeUnaColumnaDelDataFrame(dfTrain, 'Resolution')
-	lsAddress = obtenerTodosLosValoresPosiblesDeUnaColumnaDelDataFrame(dfTrain, 'Address')
-	lsDescript = obtenerTodosLosValoresPosiblesDeUnaColumnaDelDataFrame(dfTrain, 'Descript')
+	#lsResolution = obtenerTodosLosValoresPosiblesDeUnaColumnaDelDataFrame(dfTrain, 'Resolution')
+	#lsAddress = obtenerTodosLosValoresPosiblesDeUnaColumnaDelDataFrame(dfTrain, 'Address')
+	#lsDescript = obtenerTodosLosValoresPosiblesDeUnaColumnaDelDataFrame(dfTrain, 'Descript')
 	lsPdDistrict = obtenerTodosLosValoresPosiblesDeUnaColumnaDelDataFrame(dfTrain, 'PdDistrict')
-	lsTuplaXY = obtenerTodosLosValoresPosiblesDeUnaColumnaDelDataFrame(dfTrain, 'Coordinate')
-	lsDate = obtenerTodosLosValoresPosiblesDeUnaColumnaDelDataFrame(dfTrain, 'Date')
+	lsZipcode = obtenerTodosLosValoresPosiblesDeUnaColumnaDelDataFrame(dfTrain, 'Zipcode')
+	#lsTuplaXY = obtenerTodosLosValoresPosiblesDeUnaColumnaDelDataFrame(dfTrain, 'Coordinate')
+	#lsDate = obtenerTodosLosValoresPosiblesDeUnaColumnaDelDataFrame(dfTrain, 'Date')
 	#lsDatesTimeStampTotales = obtenerTodosLosValoresPosiblesDeUnaColumnaDelDataFrame(dfSunsetSunrise, 'Dates')
 			
 	#Plots de SunsetSunrise
@@ -866,7 +949,8 @@ def main():
 	#plotCoordenadas_01()								#Coordenadas de todos los crimenes
 	#plotCoordenadas_02()								#Histograma de coordenadas de crimenes
 	#plotCoordenadas_03()								#Histograma de coordenadas de crimenes para cada categoria
-	#plotCoordenadas_04() #BUG							#Coordenadas de todos los crimenes por distrito
+	plotCoordenadas_04() #BUG							#Coordenadas de todos los crimenes por distrito
+	plotCoordenadas_04_1() #BUG							#Coordenadas de todos los crimenes por distrito
 	#plotCoordenadas_05()								#Histograma de coordenadas de crimenes sin los crimenes del Hall of Justice
 	#plotCoordenadas_06()								#Histograma de coordenadas de crimenes para cada categoria sin los crimenes del Hall of Justice
 	
@@ -905,6 +989,8 @@ def main():
 	#plotMediasPorDiaDeCrimenes_03()
 	#plotMediasPorDiaDeCrimenes_04()
 	
+	#PCA
+	#plotPCA_01()
 	
 	#a = time.clock()
 	#plot8()
