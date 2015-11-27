@@ -24,9 +24,11 @@ bool CsvReader::next(RowMap &row) {
     // map tokens to keys
     std::vector<std::string> tokens = split_line(line);
     for (std::map<int, std::string>::iterator it = headers_.begin();
-         it != headers_.end(); it++)
+         it != headers_.end(); it++) {
       row[it->second] = tokens[it->first];
-      return true;
+    }
+
+    return true;
   } else {
     return false;
   }
