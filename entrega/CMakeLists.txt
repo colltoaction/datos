@@ -13,5 +13,5 @@ if(CMAKE_COMPILER_IS_GNUCXX)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS_RELEASE} -O3 -DNDEBUG")
 endif(CMAKE_COMPILER_IS_GNUCXX)
 
-set(SOURCE_FILES main.cpp CsvReader.cpp CsvReader.h)
+set(SOURCE_FILES main.cpp CsvReader.cpp CsvReader.h Predictor.cpp Predictor.h)
 add_executable(entrega ${SOURCE_FILES})

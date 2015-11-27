@@ -10,6 +10,10 @@ typedef std::map<std::string, std::string> RowMap;
 
 class CsvReader {
  public:
+  /**
+   * Toma un stream input que debe contener datos en formato csv delimitado por comas,
+   * con cabecera, y sin comillas delimitadoras.
+   */
   CsvReader(std::istream &input);
 
   /**
@@ -20,8 +24,8 @@ class CsvReader {
   bool next(RowMap &row);
 
  private:
-  std::istream &input_;
-  std::map<int, std::string> headers_;
+  std::istream &input;
+  std::map<int, std::string> headers;
   std::vector<std::string> split_line(std::string &string);
 };
 
