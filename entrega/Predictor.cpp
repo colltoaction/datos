@@ -1,5 +1,8 @@
+#include <limits>
 #include "Predictor.h"
 #include "CsvReader.h"
+
+#define THRESHOLD 0.001
 
 
 const std::array<std::string, 39> Predictor::categories = {
@@ -25,19 +28,45 @@ void Predictor::train(std::istream &train) {
   while (reader.next(row)) {
     std::string row_key = get_row_key(row);
     possible[row_key] += 1;
-    favorable[row_key][row["Category"]] += 1;
+    favorable[row_key][row.at("Category")] += 1;
+  }
+
+  long unsigned int below_threshold = 0;
+  for (size_t i = 0; i < categories.size(); ++i) {
+    for (std::map<std::string, int>::iterator it = possible.begin();
+         it != possible.end(); ++it) {
+      if (it->second > 0) {
+        long double prob = static_cast<long double>(favorable[it->first][categories[i]]) / it->second;
+        probabilities[it->first][categories[i]] = prob;
+        if (prob < THRESHOLD) {
+          below_threshold += 1;
+        }
+      } else {
+        probabilities[it->first][categories[i]] = 0;
+        below_threshold += 1;
+      }
+    }
   }
 
   for (size_t i = 0; i < categories.size(); ++i) {
     for (std::map<std::string, int>::iterator it = possible.begin();
          it != possible.end(); ++it) {
-      probabilities[it->first][categories[i]] =
-          static_cast<long double>(favorable[it->first][categories[i]]) / it->second;
+      long double X = static_cast<long double>(THRESHOLD * it->second) /
+                      (1 - THRESHOLD);
+      if (it->second > 0) {
+        int fav = favorable[it->first][categories[i]];
+        probabilities[it->first][categories[i]] = fav / (it->second + X);
+      } else {
+        probabilities[it->first][categories[i]] = X / (it->second + X);
+      }
     }
   }
 }
 
 void Predictor::predict(std::istream &test, std::ostream &predicted) {
+  predicted.precision(std::numeric_limits<long double>::max_digits10);
+  predicted << std::fixed;
+
   // header
   predicted << "Id";
   for (size_t i = 0; i < categories.size(); ++i) {
@@ -49,7 +78,7 @@ void Predictor::predict(std::istream &test, std::ostream &predicted) {
 
   RowMap row;
   while (reader.next(row)) {
-    predicted << row["Id"];
+    predicted << row.at("Id");
     std::string row_key = get_row_key(row);
     for (size_t i = 0; i < categories.size(); ++i) {
       predicted << "," << probabilities[row_key][categories[i]];
@@ -59,5 +88,5 @@ void Predictor::predict(std::istream &test, std::ostream &predicted) {
 }
 
 std::string Predictor::get_row_key(RowMap &row) {
-  return row["Zipcode"] += row["Daylight"] += row["CrimeAsociationDual"];
+  return row.at("Zipcode") += row.at("DayLightCivil") += row.at("CrimeAsociationDual");
 }
