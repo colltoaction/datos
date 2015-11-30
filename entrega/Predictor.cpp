@@ -2,7 +2,7 @@
 #include "Predictor.h"
 #include "CsvReader.h"
 
-#define THRESHOLD 0.001
+#define THRESHOLD 0.00008
 
 
 const std::array<std::string, 39> Predictor::categories = {
@@ -31,10 +31,11 @@ void Predictor::train(std::istream &train) {
     favorable[row_key][row.at("Category")] += 1;
   }
 
-  long unsigned int below_threshold = 0;
-  for (size_t i = 0; i < categories.size(); ++i) {
-    for (std::map<std::string, int>::iterator it = possible.begin();
-         it != possible.end(); ++it) {
+  for (std::map<std::string, int>::iterator it = possible.begin();
+       it != possible.end(); ++it) {
+    long unsigned int below_threshold = 0;
+    
+    for (size_t i = 0; i < categories.size(); ++i) {
       if (it->second > 0) {
         long double prob = static_cast<long double>(favorable[it->first][categories[i]]) / it->second;
         probabilities[it->first][categories[i]] = prob;
@@ -46,18 +47,20 @@ void Predictor::train(std::istream &train) {
         below_threshold += 1;
       }
     }
-  }
 
-  for (size_t i = 0; i < categories.size(); ++i) {
-    for (std::map<std::string, int>::iterator it = possible.begin();
-         it != possible.end(); ++it) {
-      long double X = static_cast<long double>(THRESHOLD * it->second) /
-                      (1 - THRESHOLD);
+    long double X = static_cast<long double>(THRESHOLD * it->second) /
+                    (1 - THRESHOLD);
+    for (size_t i = 0; i < categories.size(); ++i) {
       if (it->second > 0) {
         int fav = favorable[it->first][categories[i]];
-        probabilities[it->first][categories[i]] = fav / (it->second + X);
+        long double prob = fav / (it->second + X);
+        if (prob < THRESHOLD) {
+          probabilities[it->first][categories[i]] = X / (it->second + X);
+        } else {
+          probabilities[it->first][categories[i]] = prob;
+        }
       } else {
-        probabilities[it->first][categories[i]] = X / (it->second + X);
+        probabilities[it->first][categories[i]] = static_cast<long double>(1) / categories.size();
       }
     }
   }

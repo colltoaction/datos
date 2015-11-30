@@ -4,10 +4,8 @@
 
 
 int main(int argc, char *argv[]) {
-  std::ifstream train(argc == 3 ? argv[1] :
-                                  "/home/martin/Documents/repos/datos/entrega/trainSuperDuperFinal2.csv");
-  std::ifstream test(argc == 3 ? argv[2] :
-                                 "/home/martin/Documents/repos/datos/entrega/testSuperDuperFinal2.csv");
+  std::ifstream train(argv[1]);
+  std::ifstream test(argv[2]);
 
   Predictor predictor;
   predictor.train(train);
